@@ -9,25 +9,32 @@ import {
 } from "react-router-dom";
 
 const API = "https://unite-api.herokuapp.com/";
+function Loading() {
+  return <div className="loader" data-testid="loading"></div>;
+}
+async function fetchListing(id) {
+  const response = await fetch(`${API}api/listings/${id}`);
+  return response.json();
+}
 class App extends React.Component {
   render() {
     return (
       <div>
         <Router>
-          <nav>
-            <ul>
-              <li>
+          <nav data-testid="nav-bar">
+            <ul data-testid="ul">
+              <li data-testid="li">
                 <NavLink to="/" exact={true}>
                   Home
                 </NavLink>
               </li>
-              <li>
+              <li data-testid="li">
                 <NavLink to="/all-listings">Listings</NavLink>
               </li>
-              <li>
+              <li data-testid="li">
                 <NavLink to="/listings/new">Post A Listing</NavLink>
               </li>
-              <li id="profile">
+              <li id="profile" data-testid="li">
                 <NavLink to="/my">
                   <div height="50px" width="50px">
                     Profile
@@ -54,9 +61,6 @@ class App extends React.Component {
   }
 }
 
-function Loading() {
-  return <div className="loader"></div>;
-}
 class HomePage extends React.Component {
   constructor() {
     super();
@@ -85,17 +89,17 @@ class HomePage extends React.Component {
 
   render() {
     return (
-      <div id="homepage">
+      <div id="homepage" data-testid="homepage">
         {this.state.loading && <Loading />}
-        <div id="prompt">
+        <div id="prompt" data-testid="prompt">
           <h1>Find The Best Place To Stay </h1>
           <h4>WORK | INTERNSHIP | SHORT TRIPS</h4>
           <SearchForm onSearch={this.handleSearch} />
         </div>
-        <div id="filter"></div>
+        <div id="filter" data-testid="filter"></div>
         <div>
           {" "}
-          <div className="resultsList">
+          <div className="resultsList" data-testid="results-list">
             {this.state.filteredListings.map(post => {
               return (
                 <ul>
@@ -132,13 +136,18 @@ class SearchForm extends React.Component {
 
   render() {
     return (
-      <form className="searchbar" onSubmit={this.handleSearch}>
+      <form
+        className="searchbar"
+        onSubmit={this.handleSearch}
+        data-testid="search-bar"
+      >
         <input
           type="text"
           placeholder='Try Searching "Los Angeles"'
           className="search"
           value={this.state.searchValue}
           onChange={this.handleSearchInputChange}
+          data-testid="search-input"
         />
         <button type="submit" id="submitsearch">
           Search
@@ -171,7 +180,7 @@ class IndividualListing extends React.Component {
     return this.state.loading ? (
       <Loading />
     ) : (
-      <div className="details">
+      <div className="details" data-testid="detail-individual">
         <div
           className="fullimage"
           style={{
@@ -275,9 +284,9 @@ class ListingsPage extends React.Component {
 
   render() {
     return (
-      <div id="all-listings">
+      <div id="all-listings" data-testid="all">
         {this.state.loading && <Loading />}
-        <div className="headerimage">
+        <div className="headerimage" data-testid="image-test">
           <h2>All Listings</h2>
           <div className="filter2"></div>
         </div>
@@ -339,10 +348,7 @@ class ListingsPage extends React.Component {
     );
   }
 }
-async function fetchListing(id) {
-  const response = await fetch(`${API}api/listings/${id}`);
-  return response.json();
-}
+
 class ListingDetails extends React.Component {
   constructor(props) {
     super(props);
@@ -496,6 +502,7 @@ class NewListing extends React.Component {
       parking: ""
     };
   }
+
   handleMypost = () => {
     this.setState({ mypost: true });
   };
@@ -655,6 +662,7 @@ class NewListing extends React.Component {
         })
       });
       this.setState({ redirectToMain: true });
+      alert("You've successfully created your post");
     }
   };
 
@@ -663,9 +671,13 @@ class NewListing extends React.Component {
       return <Redirect to="/all-listings" />;
     }
     return (
-      <form onSubmit={this.handleSubmit} className="postingform">
+      <form
+        onSubmit={this.handleSubmit}
+        className="postingform"
+        data-testid="new-listing"
+      >
         <div>
-          <label htmlFor="mypost" className="mypost">
+          <label htmlFor="mypost" className="mypost" data-testid="labels">
             My Post
           </label>
           <input
@@ -674,32 +686,45 @@ class NewListing extends React.Component {
             value={this.state.mypost}
             onChange={this.handleMypost}
             checked
+            data-testid="input-field"
           ></input>
         </div>
         <div>
-          <label htmlFor="title">Title:</label>
+          <label htmlFor="title" data-testid="labels">
+            Title:
+          </label>
           <input
             type="text"
             id="title"
             className="postingtext"
             value={this.state.title}
             onChange={this.handleTitleChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.title}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.title}
+          </p>
         </div>
         <div>
-          <label htmlFor="image">Image Link:</label>
+          <label htmlFor="image" data-testid="labels">
+            Image Link:
+          </label>
           <input
             type="text"
             className="postingtext"
             id="image"
             value={this.state.image}
             onChange={this.handleImageChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.image}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.image}
+          </p>
         </div>
         <div>
-          <label htmlFor="bed">Number of Beds:</label>
+          <label htmlFor="bed" data-testid="labels">
+            Number of Beds:
+          </label>
           <input
             type="number"
             className="postingnumber"
@@ -708,10 +733,13 @@ class NewListing extends React.Component {
             max="10"
             value={this.state.bed}
             onChange={this.handleBedChange}
+            data-testid="input-field"
           />
         </div>
         <div>
-          <label htmlFor="bath">Number of Bath:</label>
+          <label htmlFor="bath" data-testid="labels">
+            Number of Bath:
+          </label>
           <input
             type="number"
             className="postingnumber"
@@ -720,43 +748,61 @@ class NewListing extends React.Component {
             max="10"
             value={this.state.bath}
             onChange={this.handleBathChange}
+            data-testid="input-field"
           />
         </div>
         <div>
-          <label htmlFor="address">Address:</label>
+          <label htmlFor="address" data-testid="labels">
+            Address:
+          </label>
           <input
             type="text"
             className="postingtext"
             id="address"
             value={this.state.address}
             onChange={this.handleAddressChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.address}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.address}
+          </p>
         </div>
         <div>
-          <label htmlFor="city">City:</label>
+          <label htmlFor="city" data-testid="labels">
+            City:
+          </label>
           <input
             type="text"
             className="postingtext"
             id="city"
             value={this.state.city}
             onChange={this.handleCityChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.city}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.city}
+          </p>
         </div>
         <div>
-          <label htmlFor="price">Price:</label>
+          <label htmlFor="price" data-testid="labels">
+            Price:
+          </label>
           <input
             type="number"
             className="postingnumber"
             id="price"
             value={this.state.price}
             onChange={this.handlePriceChange}
+            data-testid="input-field"
           />
-          <p className="errormsg">{this.state.errors.price}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.price}
+          </p>
         </div>
         <div>
-          <label htmlFor="startDate">Start date:</label>
+          <label htmlFor="startDate" data-testid="labels">
+            Start date:
+          </label>
           <input
             type="date"
             className="postingdate"
@@ -765,10 +811,13 @@ class NewListing extends React.Component {
             max="2020-12-31"
             value={this.state.startDate}
             onChange={this.handleStartChange}
+            data-testid="input-field"
           />
         </div>
         <div>
-          <label htmlFor="endDate">End date:</label>
+          <label htmlFor="endDate" data-testid="labels">
+            End date:
+          </label>
           <input
             type="date"
             id="endDate"
@@ -777,106 +826,152 @@ class NewListing extends React.Component {
             max="2020-12-31"
             value={this.state.endDate}
             onChange={this.handleEndChange}
+            data-testid="input-field"
           />
         </div>
         <div>
-          <label htmlFor="host">Host Name:</label>
+          <label htmlFor="host" data-testid="labels">
+            Host Name:
+          </label>
           <input
             type="text"
             className="postingtext"
             id="host"
             value={this.state.host}
             onChange={this.handleHostChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.host}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.host}
+          </p>
         </div>
         <div>
-          <label htmlFor="description">Description:</label>
+          <label htmlFor="description" data-testid="labels">
+            Description:
+          </label>
           <textarea
             className="postingtextarea"
             id="description"
             value={this.state.description}
             onChange={this.handleDesChange}
+            data-testid="input-field"
           ></textarea>
-          <p className="errormsg">{this.state.errors.description}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.description}
+          </p>
         </div>
 
         <div>
-          <label htmlFor="kitchen">Kitchen:</label>
+          <label htmlFor="kitchen" data-testid="labels">
+            Kitchen:
+          </label>
           <input
             type="text"
             className="postingtext"
             id="kitchen"
             value={this.state.kitchen}
             onChange={this.handleKitchenChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.kitchen}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.kitchen}
+          </p>
         </div>
         <div>
-          <label htmlFor="gym">Gym:</label>
+          <label htmlFor="gym" data-testid="labels">
+            Gym:
+          </label>
           <input
             type="text"
             className="postingtext"
             id="gym"
             value={this.state.gym}
             onChange={this.handleGymChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.gym}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.gym}
+          </p>
         </div>
         <div>
-          <label htmlFor="washer">Washer:</label>
+          <label htmlFor="washer" data-testid="labels">
+            Washer:
+          </label>
           <input
             type="text"
             className="postingtext"
             id="washer"
             value={this.state.washer}
             onChange={this.handleWasherChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.washer}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.washer}
+          </p>
         </div>
         <div>
-          <label htmlFor="dryer">Dryer:</label>
+          <label htmlFor="dryer" data-testid="labels">
+            Dryer:
+          </label>
           <input
             type="text"
             className="postingtext"
             id="dryer"
             value={this.state.dryer}
             onChange={this.handleDryerChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.dryer}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.dryer}
+          </p>
         </div>
         <div>
-          <label htmlFor="wifi">WiFi:</label>
+          <label htmlFor="wifi" data-testid="labels">
+            WiFi:
+          </label>
           <input
             type="text"
             className="postingtext"
             id="wifi"
             value={this.state.wifi}
             onChange={this.handleWifiChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.wifi}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.wifi}
+          </p>
         </div>
         <div>
-          <label htmlFor="AC">Air Conditioner:</label>
+          <label htmlFor="AC" data-testid="labels">
+            Air Conditioner:
+          </label>
           <input
             type="text"
             className="postingtext"
             id="AC"
             value={this.state.AC}
             onChange={this.handleACChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.AC}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.AC}
+          </p>
         </div>
         <div>
-          <label htmlFor="parking">Parking:</label>
+          <label htmlFor="parking" data-testid="labels">
+            Parking:
+          </label>
           <input
             type="text"
             className="postingtext"
             id="parking"
             value={this.state.parking}
             onChange={this.handleParkingChange}
+            data-testid="input-field"
           ></input>
-          <p className="errormsg">{this.state.errors.parking}</p>
+          <p className="errormsg" data-testid="error-msg">
+            {this.state.errors.parking}
+          </p>
         </div>
 
         <button id="publish">Publish</button>
@@ -1095,6 +1190,7 @@ class EditListing extends React.Component {
         })
       });
       this.setState({ redirectToMain: true });
+      alert("You've successfully edited your post");
     }
   };
 
@@ -1344,7 +1440,7 @@ class Profile extends React.Component {
     await fetch(`${API}api/listings/${id}`, {
       method: "DELETE"
     });
-
+    alert("You've successfully deleted your post");
     this.setState({
       posts: this.state.posts.filter(post => {
         return post.id !== id;
@@ -1422,5 +1518,16 @@ class Profile extends React.Component {
     );
   }
 }
-
 export default App;
+export {
+  App,
+  HomePage,
+  Loading,
+  SearchForm,
+  IndividualListing,
+  ListingsPage,
+  ListingDetails,
+  NewListing,
+  EditListing,
+  Profile
+};
