@@ -1,3 +1,11 @@
+## Travis
+
+[![Build Status](https://travis-ci.com/ITP-Webdev/final-project-jenniferjyh.svg?token=qzdCuvEMP2jchu2qcEVu&branch=master)](https://travis-ci.com/ITP-Webdev/final-project-jenniferjyh)
+
+## Surge
+
+## Youtube
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

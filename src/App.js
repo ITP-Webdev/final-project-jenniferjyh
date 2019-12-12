@@ -7,7 +7,7 @@ import {
   NavLink,
   Redirect
 } from "react-router-dom";
-
+import DocumentTitle from "react-document-title";
 const API = "https://unite-api.herokuapp.com/";
 function Loading() {
   return <div className="loader" data-testid="loading"></div>;
@@ -19,44 +19,46 @@ async function fetchListing(id) {
 class App extends React.Component {
   render() {
     return (
-      <div>
-        <Router>
-          <nav data-testid="nav-bar">
-            <ul data-testid="ul">
-              <li data-testid="li">
-                <NavLink to="/" exact={true}>
-                  Home
-                </NavLink>
-              </li>
-              <li data-testid="li">
-                <NavLink to="/all-listings">Listings</NavLink>
-              </li>
-              <li data-testid="li">
-                <NavLink to="/listings/new">Post A Listing</NavLink>
-              </li>
-              <li id="profile" data-testid="li">
-                <NavLink to="/my">
-                  <div height="50px" width="50px">
-                    Profile
-                  </div>
-                </NavLink>
-              </li>
-            </ul>
-          </nav>
+      <DocumentTitle title="Home Page">
+        <div>
+          <Router>
+            <nav data-testid="nav-bar">
+              <ul data-testid="ul">
+                <li data-testid="li">
+                  <NavLink to="/" exact={true}>
+                    Home
+                  </NavLink>
+                </li>
+                <li data-testid="li">
+                  <NavLink to="/all-listings">Listings</NavLink>
+                </li>
+                <li data-testid="li">
+                  <NavLink to="/listings/new">Post A Listing</NavLink>
+                </li>
+                <li id="profile" data-testid="li">
+                  <NavLink to="/my">
+                    <div height="50px" width="50px">
+                      Profile
+                    </div>
+                  </NavLink>
+                </li>
+              </ul>
+            </nav>
 
-          <Switch>
-            <Route path="/" exact={true} component={HomePage}></Route>
-            <Route path="/all-listings" component={ListingsPage}></Route>
-            <Route path="/listing/:id" component={IndividualListing}></Route>
-            <Route path="/listings/new" component={NewListing}></Route>
-            <Route path="/listings/edit/:id" component={EditListing}></Route>
-            <Route path="/my" component={Profile}></Route>
-            <Route>
-              <h5 id="pagenotfound">Page Not Found</h5>
-            </Route>
-          </Switch>
-        </Router>
-      </div>
+            <Switch>
+              <Route path="/" exact={true} component={HomePage}></Route>
+              <Route path="/all-listings" component={ListingsPage}></Route>
+              <Route path="/listing/:id" component={IndividualListing}></Route>
+              <Route path="/listings/new" component={NewListing}></Route>
+              <Route path="/listings/edit/:id" component={EditListing}></Route>
+              <Route path="/my" component={Profile}></Route>
+              <Route>
+                <h5 id="pagenotfound">Page Not Found</h5>
+              </Route>
+            </Switch>
+          </Router>
+        </div>
+      </DocumentTitle>
     );
   }
 }
@@ -178,93 +180,101 @@ class IndividualListing extends React.Component {
 
   render() {
     return this.state.loading ? (
-      <Loading />
+      <DocumentTitle title="Chosen Listing">
+        <Loading />
+      </DocumentTitle>
     ) : (
-      <div className="details" data-testid="detail-individual">
-        <div
-          className="fullimage"
-          style={{
-            margin: "25px",
-            width: "500px",
-            height: "350px",
-            backgroundImage: 'url("' + this.state.post.header.image + '")',
-            backgroundSize: "cover",
-            float: "left",
-            borderRadius: "10pt",
-            boxShadow: "2px 2px 10px rgb(175, 175, 175)"
-          }}
-        ></div>
-        <div className="content">
-          <h3>{this.state.post.title}</h3>
-          <h4>${this.state.post.header.price}/month</h4>
-          <h5>
-            <span style={{ fontSize: "12pt", fontWeight: "600" }}>
-              Available from:{" "}
-            </span>
-            {this.state.post.header.startDate}
-          </h5>
-          <h6>
-            {" "}
-            <span style={{ fontSize: "12pt", fontWeight: "600" }}>
-              To:{" "}
-            </span>{" "}
-            {this.state.post.header.endDate}
-          </h6>
+      <DocumentTitle title="Chosen Listing">
+        <div className="details" data-testid="detail-individual">
+          <div
+            className="fullimage"
+            style={{
+              margin: "25px",
+              width: "500px",
+              height: "350px",
+              backgroundImage: 'url("' + this.state.post.header.image + '")',
+              backgroundSize: "cover",
+              float: "left",
+              borderRadius: "10pt",
+              boxShadow: "2px 2px 10px rgb(175, 175, 175)"
+            }}
+          ></div>
+          <div className="content">
+            <h3>{this.state.post.title}</h3>
+            <h4>${this.state.post.header.price}/month</h4>
+            <h5>
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                Available from:{" "}
+              </span>
+              {this.state.post.header.startDate}
+            </h5>
+            <h6>
+              {" "}
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                To:{" "}
+              </span>{" "}
+              {this.state.post.header.endDate}
+            </h6>
 
-          <p className="addressline">{this.state.post.header.address}</p>
-          <p className="bedbath">
-            <span style={{ fontSize: "12pt", fontWeight: "600" }}>Bed: </span>{" "}
-            {this.state.post.header.bed} |{" "}
-            <span style={{ fontSize: "12pt", fontWeight: "600" }}>Bath: </span>
-            {this.state.post.header.bed}
-          </p>
-          <hr></hr>
-          <p className="des">"{this.state.post.deets.description}"</p>
-          <hr></hr>
-          <ul>
-            <li>
+            <p className="addressline">{this.state.post.header.address}</p>
+            <p className="bedbath">
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>Bed: </span>{" "}
+              {this.state.post.header.bed} |{" "}
               <span style={{ fontSize: "12pt", fontWeight: "600" }}>
-                Kitchen:{" "}
+                Bath:{" "}
               </span>
-              {this.state.post.deets.kitchen}
-            </li>
-            <li>
-              <span style={{ fontSize: "12pt", fontWeight: "600" }}>Gym: </span>
-              {this.state.post.deets.gym}
-            </li>
-            <li>
-              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
-                Washer:{" "}
-              </span>
-              {this.state.post.deets.washer}
-            </li>
-            <li>
-              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
-                Dryer:{" "}
-              </span>
-              {this.state.post.deets.dryer}
-            </li>
-            <li>
-              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
-                WiFi:{" "}
-              </span>
-              {this.state.post.deets.wifi}
-            </li>
-            <li>
-              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
-                Air Conditioning:{" "}
-              </span>
-              {this.state.post.deets.AC}
-            </li>
-            <li>
-              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
-                Parking:{" "}
-              </span>
-              {this.state.post.deets.parking}
-            </li>
-          </ul>
+              {this.state.post.header.bed}
+            </p>
+            <hr></hr>
+            <p className="des">"{this.state.post.deets.description}"</p>
+            <hr></hr>
+            <ul>
+              <li>
+                <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                  Kitchen:{" "}
+                </span>
+                {this.state.post.deets.kitchen}
+              </li>
+              <li>
+                <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                  Gym:{" "}
+                </span>
+                {this.state.post.deets.gym}
+              </li>
+              <li>
+                <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                  Washer:{" "}
+                </span>
+                {this.state.post.deets.washer}
+              </li>
+              <li>
+                <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                  Dryer:{" "}
+                </span>
+                {this.state.post.deets.dryer}
+              </li>
+              <li>
+                <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                  WiFi:{" "}
+                </span>
+                {this.state.post.deets.wifi}
+              </li>
+              <li>
+                <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                  Air Conditioning:{" "}
+                </span>
+                {this.state.post.deets.AC}
+              </li>
+              <li>
+                <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                  Parking:{" "}
+                </span>
+                {this.state.post.deets.parking}
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </DocumentTitle>
     );
   }
 }
@@ -284,67 +294,69 @@ class ListingsPage extends React.Component {
 
   render() {
     return (
-      <div id="all-listings" data-testid="all">
-        {this.state.loading && <Loading />}
-        <div className="headerimage" data-testid="image-test">
-          <h2>All Listings</h2>
-          <div className="filter2"></div>
-        </div>
-        {this.state.posts.map(post => {
-          return (
-            <div className="results" key={post.id}>
-              <NavLink
-                to={`/all-listings/${post.id}`}
-                style={{ textDecoration: "none", color: "black" }}
-              >
-                <div
-                  className="card"
-                  key={post.id}
-                  style={{
-                    backgroundImage: 'url("' + post.header.image + '")',
-                    backgroundSize: "cover"
-                  }}
+      <DocumentTitle title="All Listings">
+        <div id="all-listings" data-testid="all">
+          {this.state.loading && <Loading />}
+          <div className="headerimage" data-testid="image-test">
+            <h2>All Listings</h2>
+            <div className="filter2"></div>
+          </div>
+          {this.state.posts.map(post => {
+            return (
+              <div className="results" key={post.id}>
+                <NavLink
+                  to={`/all-listings/${post.id}`}
+                  style={{ textDecoration: "none", color: "black" }}
                 >
-                  <div className="headerbar">
-                    <h3>{post.title}</h3>
-                    <p className="addressline">{post.header.address}</p>
-                    <p className="bedbath">
-                      Bed: {post.header.bed} | Bath: {post.header.bed}
-                    </p>
-                    <p className="hostname">
-                      <span
-                        style={{
-                          fontWeight: "600",
-                          fontSize: "10pt",
-                          lineHeight: "0pt"
-                        }}
-                      >
-                        Host: {post.header.host}
-                      </span>
-                      <span
-                        style={{
-                          color: "orange",
-                          fontWeight: "600",
-                          fontSize: "10pt",
-                          float: "right"
-                        }}
-                      >
-                        {post.header.likes} likes
-                      </span>
-                    </p>
+                  <div
+                    className="card"
+                    key={post.id}
+                    style={{
+                      backgroundImage: 'url("' + post.header.image + '")',
+                      backgroundSize: "cover"
+                    }}
+                  >
+                    <div className="headerbar">
+                      <h3>{post.title}</h3>
+                      <p className="addressline">{post.header.address}</p>
+                      <p className="bedbath">
+                        Bed: {post.header.bed} | Bath: {post.header.bed}
+                      </p>
+                      <p className="hostname">
+                        <span
+                          style={{
+                            fontWeight: "600",
+                            fontSize: "10pt",
+                            lineHeight: "0pt"
+                          }}
+                        >
+                          Host: {post.header.host}
+                        </span>
+                        <span
+                          style={{
+                            color: "orange",
+                            fontWeight: "600",
+                            fontSize: "10pt",
+                            float: "right"
+                          }}
+                        >
+                          {post.header.likes} likes
+                        </span>
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </NavLink>
-              <Switch>
-                <Route
-                  path="/all-listings/:id"
-                  component={ListingDetails}
-                ></Route>
-              </Switch>
-            </div>
-          );
-        })}
-      </div>
+                </NavLink>
+                <Switch>
+                  <Route
+                    path="/all-listings/:id"
+                    component={ListingDetails}
+                  ></Route>
+                </Switch>
+              </div>
+            );
+          })}
+        </div>
+      </DocumentTitle>
     );
   }
 }
@@ -671,311 +683,313 @@ class NewListing extends React.Component {
       return <Redirect to="/all-listings" />;
     }
     return (
-      <form
-        onSubmit={this.handleSubmit}
-        className="postingform"
-        data-testid="new-listing"
-      >
-        <div>
-          <label htmlFor="mypost" className="mypost" data-testid="labels">
-            My Post
-          </label>
-          <input
-            type="radio"
-            className="mypost"
-            value={this.state.mypost}
-            onChange={this.handleMypost}
-            checked
-            data-testid="input-field"
-          ></input>
-        </div>
-        <div>
-          <label htmlFor="title" data-testid="labels">
-            Title:
-          </label>
-          <input
-            type="text"
-            id="title"
-            className="postingtext"
-            value={this.state.title}
-            onChange={this.handleTitleChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.title}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="image" data-testid="labels">
-            Image Link:
-          </label>
-          <input
-            type="text"
-            className="postingtext"
-            id="image"
-            value={this.state.image}
-            onChange={this.handleImageChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.image}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="bed" data-testid="labels">
-            Number of Beds:
-          </label>
-          <input
-            type="number"
-            className="postingnumber"
-            id="bed"
-            min="0"
-            max="10"
-            value={this.state.bed}
-            onChange={this.handleBedChange}
-            data-testid="input-field"
-          />
-        </div>
-        <div>
-          <label htmlFor="bath" data-testid="labels">
-            Number of Bath:
-          </label>
-          <input
-            type="number"
-            className="postingnumber"
-            id="bath"
-            min="0"
-            max="10"
-            value={this.state.bath}
-            onChange={this.handleBathChange}
-            data-testid="input-field"
-          />
-        </div>
-        <div>
-          <label htmlFor="address" data-testid="labels">
-            Address:
-          </label>
-          <input
-            type="text"
-            className="postingtext"
-            id="address"
-            value={this.state.address}
-            onChange={this.handleAddressChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.address}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="city" data-testid="labels">
-            City:
-          </label>
-          <input
-            type="text"
-            className="postingtext"
-            id="city"
-            value={this.state.city}
-            onChange={this.handleCityChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.city}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="price" data-testid="labels">
-            Price:
-          </label>
-          <input
-            type="number"
-            className="postingnumber"
-            id="price"
-            value={this.state.price}
-            onChange={this.handlePriceChange}
-            data-testid="input-field"
-          />
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.price}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="startDate" data-testid="labels">
-            Start date:
-          </label>
-          <input
-            type="date"
-            className="postingdate"
-            id="startDate"
-            min="2019-12-11"
-            max="2020-12-31"
-            value={this.state.startDate}
-            onChange={this.handleStartChange}
-            data-testid="input-field"
-          />
-        </div>
-        <div>
-          <label htmlFor="endDate" data-testid="labels">
-            End date:
-          </label>
-          <input
-            type="date"
-            id="endDate"
-            className="postingdate"
-            min="2019-12-12"
-            max="2020-12-31"
-            value={this.state.endDate}
-            onChange={this.handleEndChange}
-            data-testid="input-field"
-          />
-        </div>
-        <div>
-          <label htmlFor="host" data-testid="labels">
-            Host Name:
-          </label>
-          <input
-            type="text"
-            className="postingtext"
-            id="host"
-            value={this.state.host}
-            onChange={this.handleHostChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.host}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="description" data-testid="labels">
-            Description:
-          </label>
-          <textarea
-            className="postingtextarea"
-            id="description"
-            value={this.state.description}
-            onChange={this.handleDesChange}
-            data-testid="input-field"
-          ></textarea>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.description}
-          </p>
-        </div>
+      <DocumentTitle title="Create Listing">
+        <form
+          onSubmit={this.handleSubmit}
+          className="postingform"
+          data-testid="new-listing"
+        >
+          <div>
+            <label htmlFor="mypost" className="mypost" data-testid="labels">
+              My Post
+            </label>
+            <input
+              type="radio"
+              className="mypost"
+              value={this.state.mypost}
+              onChange={this.handleMypost}
+              checked
+              data-testid="input-field"
+            ></input>
+          </div>
+          <div>
+            <label htmlFor="title" data-testid="labels">
+              Title:
+            </label>
+            <input
+              type="text"
+              id="title"
+              className="postingtext"
+              value={this.state.title}
+              onChange={this.handleTitleChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.title}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="image" data-testid="labels">
+              Image Link:
+            </label>
+            <input
+              type="text"
+              className="postingtext"
+              id="image"
+              value={this.state.image}
+              onChange={this.handleImageChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.image}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="bed" data-testid="labels">
+              Number of Beds:
+            </label>
+            <input
+              type="number"
+              className="postingnumber"
+              id="bed"
+              min="0"
+              max="10"
+              value={this.state.bed}
+              onChange={this.handleBedChange}
+              data-testid="input-field"
+            />
+          </div>
+          <div>
+            <label htmlFor="bath" data-testid="labels">
+              Number of Bath:
+            </label>
+            <input
+              type="number"
+              className="postingnumber"
+              id="bath"
+              min="0"
+              max="10"
+              value={this.state.bath}
+              onChange={this.handleBathChange}
+              data-testid="input-field"
+            />
+          </div>
+          <div>
+            <label htmlFor="address" data-testid="labels">
+              Address:
+            </label>
+            <input
+              type="text"
+              className="postingtext"
+              id="address"
+              value={this.state.address}
+              onChange={this.handleAddressChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.address}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="city" data-testid="labels">
+              City:
+            </label>
+            <input
+              type="text"
+              className="postingtext"
+              id="city"
+              value={this.state.city}
+              onChange={this.handleCityChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.city}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="price" data-testid="labels">
+              Price:
+            </label>
+            <input
+              type="number"
+              className="postingnumber"
+              id="price"
+              value={this.state.price}
+              onChange={this.handlePriceChange}
+              data-testid="input-field"
+            />
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.price}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="startDate" data-testid="labels">
+              Start date:
+            </label>
+            <input
+              type="date"
+              className="postingdate"
+              id="startDate"
+              min="2019-12-11"
+              max="2020-12-31"
+              value={this.state.startDate}
+              onChange={this.handleStartChange}
+              data-testid="input-field"
+            />
+          </div>
+          <div>
+            <label htmlFor="endDate" data-testid="labels">
+              End date:
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              className="postingdate"
+              min="2019-12-12"
+              max="2020-12-31"
+              value={this.state.endDate}
+              onChange={this.handleEndChange}
+              data-testid="input-field"
+            />
+          </div>
+          <div>
+            <label htmlFor="host" data-testid="labels">
+              Host Name:
+            </label>
+            <input
+              type="text"
+              className="postingtext"
+              id="host"
+              value={this.state.host}
+              onChange={this.handleHostChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.host}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="description" data-testid="labels">
+              Description:
+            </label>
+            <textarea
+              className="postingtextarea"
+              id="description"
+              value={this.state.description}
+              onChange={this.handleDesChange}
+              data-testid="input-field"
+            ></textarea>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.description}
+            </p>
+          </div>
 
-        <div>
-          <label htmlFor="kitchen" data-testid="labels">
-            Kitchen:
-          </label>
-          <input
-            type="text"
-            className="postingtext"
-            id="kitchen"
-            value={this.state.kitchen}
-            onChange={this.handleKitchenChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.kitchen}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="gym" data-testid="labels">
-            Gym:
-          </label>
-          <input
-            type="text"
-            className="postingtext"
-            id="gym"
-            value={this.state.gym}
-            onChange={this.handleGymChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.gym}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="washer" data-testid="labels">
-            Washer:
-          </label>
-          <input
-            type="text"
-            className="postingtext"
-            id="washer"
-            value={this.state.washer}
-            onChange={this.handleWasherChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.washer}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="dryer" data-testid="labels">
-            Dryer:
-          </label>
-          <input
-            type="text"
-            className="postingtext"
-            id="dryer"
-            value={this.state.dryer}
-            onChange={this.handleDryerChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.dryer}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="wifi" data-testid="labels">
-            WiFi:
-          </label>
-          <input
-            type="text"
-            className="postingtext"
-            id="wifi"
-            value={this.state.wifi}
-            onChange={this.handleWifiChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.wifi}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="AC" data-testid="labels">
-            Air Conditioner:
-          </label>
-          <input
-            type="text"
-            className="postingtext"
-            id="AC"
-            value={this.state.AC}
-            onChange={this.handleACChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.AC}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="parking" data-testid="labels">
-            Parking:
-          </label>
-          <input
-            type="text"
-            className="postingtext"
-            id="parking"
-            value={this.state.parking}
-            onChange={this.handleParkingChange}
-            data-testid="input-field"
-          ></input>
-          <p className="errormsg" data-testid="error-msg">
-            {this.state.errors.parking}
-          </p>
-        </div>
+          <div>
+            <label htmlFor="kitchen" data-testid="labels">
+              Kitchen:
+            </label>
+            <input
+              type="text"
+              className="postingtext"
+              id="kitchen"
+              value={this.state.kitchen}
+              onChange={this.handleKitchenChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.kitchen}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="gym" data-testid="labels">
+              Gym:
+            </label>
+            <input
+              type="text"
+              className="postingtext"
+              id="gym"
+              value={this.state.gym}
+              onChange={this.handleGymChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.gym}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="washer" data-testid="labels">
+              Washer:
+            </label>
+            <input
+              type="text"
+              className="postingtext"
+              id="washer"
+              value={this.state.washer}
+              onChange={this.handleWasherChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.washer}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="dryer" data-testid="labels">
+              Dryer:
+            </label>
+            <input
+              type="text"
+              className="postingtext"
+              id="dryer"
+              value={this.state.dryer}
+              onChange={this.handleDryerChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.dryer}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="wifi" data-testid="labels">
+              WiFi:
+            </label>
+            <input
+              type="text"
+              className="postingtext"
+              id="wifi"
+              value={this.state.wifi}
+              onChange={this.handleWifiChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.wifi}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="AC" data-testid="labels">
+              Air Conditioner:
+            </label>
+            <input
+              type="text"
+              className="postingtext"
+              id="AC"
+              value={this.state.AC}
+              onChange={this.handleACChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.AC}
+            </p>
+          </div>
+          <div>
+            <label htmlFor="parking" data-testid="labels">
+              Parking:
+            </label>
+            <input
+              type="text"
+              className="postingtext"
+              id="parking"
+              value={this.state.parking}
+              onChange={this.handleParkingChange}
+              data-testid="input-field"
+            ></input>
+            <p className="errormsg" data-testid="error-msg">
+              {this.state.errors.parking}
+            </p>
+          </div>
 
-        <button id="publish">Publish</button>
-      </form>
+          <button id="publish">Publish</button>
+        </form>
+      </DocumentTitle>
     );
   }
 }
@@ -1199,227 +1213,229 @@ class EditListing extends React.Component {
       return <Redirect to="/my" />;
     }
     return (
-      <div className="edit">
-        <h5>Edit Post</h5>
-        <form onSubmit={this.handleSubmit} className="postingform">
-          <div>
-            <label htmlFor="mypost" className="mypost">
-              My Post
-            </label>
-            <input
-              type="radio"
-              className="mypost"
-              value={this.state.mypost}
-              onChange={this.handleMypost}
-              checked
-            ></input>
-          </div>
-          <div>
-            <label htmlFor="title">Title:</label>
-            <input
-              type="text"
-              id="title"
-              className="postingtext"
-              value={this.state.title}
-              onChange={this.handleTitleChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.title}</p>
-          </div>
-          <div>
-            <label htmlFor="image">Image Link:</label>
-            <input
-              type="text"
-              className="postingtext"
-              id="image"
-              value={this.state.image}
-              onChange={this.handleImageChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.image}</p>
-          </div>
-          <div>
-            <label htmlFor="bed">Number of Beds:</label>
-            <input
-              type="number"
-              className="postingnumber"
-              id="bed"
-              min="0"
-              max="10"
-              value={this.state.bed}
-              onChange={this.handleBedChange}
-            />
-          </div>
-          <div>
-            <label htmlFor="bath">Number of Bath:</label>
-            <input
-              type="number"
-              className="postingnumber"
-              id="bath"
-              min="0"
-              max="10"
-              value={this.state.bath}
-              onChange={this.handleBathChange}
-            />
-          </div>
-          <div>
-            <label htmlFor="address">Address:</label>
-            <input
-              type="text"
-              className="postingtext"
-              id="address"
-              value={this.state.address}
-              onChange={this.handleAddressChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.address}</p>
-          </div>
-          <div>
-            <label htmlFor="city">City:</label>
-            <input
-              type="text"
-              className="postingtext"
-              id="city"
-              value={this.state.city}
-              onChange={this.handleCityChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.city}</p>
-          </div>
-          <div>
-            <label htmlFor="price">Price:</label>
-            <input
-              type="number"
-              className="postingnumber"
-              id="price"
-              value={this.state.price}
-              onChange={this.handlePriceChange}
-            />
-            <p className="errormsg">{this.state.errors.price}</p>
-          </div>
-          <div>
-            <label htmlFor="startDate">Start date:</label>
-            <input
-              type="date"
-              className="postingdate"
-              id="startDate"
-              min="2019-12-11"
-              max="2020-12-31"
-              value={this.state.startDate}
-              onChange={this.handleStartChange}
-            />
-          </div>
-          <div>
-            <label htmlFor="endDate">End date:</label>
-            <input
-              type="date"
-              id="endDate"
-              className="postingdate"
-              min="2019-12-12"
-              max="2020-12-31"
-              value={this.state.endDate}
-              onChange={this.handleEndChange}
-            />
-          </div>
-          <div>
-            <label htmlFor="host">Host Name:</label>
-            <input
-              type="text"
-              className="postingtext"
-              id="host"
-              value={this.state.host}
-              onChange={this.handleHostChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.host}</p>
-          </div>
-          <div>
-            <label htmlFor="description">Description:</label>
-            <textarea
-              className="postingtextarea"
-              id="description"
-              value={this.state.description}
-              onChange={this.handleDesChange}
-            ></textarea>
-            <p className="errormsg">{this.state.errors.description}</p>
-          </div>
+      <DocumentTitle title="Edit Listing">
+        <div className="edit">
+          <h5>Edit Post</h5>
+          <form onSubmit={this.handleSubmit} className="postingform">
+            <div>
+              <label htmlFor="mypost" className="mypost">
+                My Post
+              </label>
+              <input
+                type="radio"
+                className="mypost"
+                value={this.state.mypost}
+                onChange={this.handleMypost}
+                checked
+              ></input>
+            </div>
+            <div>
+              <label htmlFor="title">Title:</label>
+              <input
+                type="text"
+                id="title"
+                className="postingtext"
+                value={this.state.title}
+                onChange={this.handleTitleChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.title}</p>
+            </div>
+            <div>
+              <label htmlFor="image">Image Link:</label>
+              <input
+                type="text"
+                className="postingtext"
+                id="image"
+                value={this.state.image}
+                onChange={this.handleImageChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.image}</p>
+            </div>
+            <div>
+              <label htmlFor="bed">Number of Beds:</label>
+              <input
+                type="number"
+                className="postingnumber"
+                id="bed"
+                min="0"
+                max="10"
+                value={this.state.bed}
+                onChange={this.handleBedChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="bath">Number of Bath:</label>
+              <input
+                type="number"
+                className="postingnumber"
+                id="bath"
+                min="0"
+                max="10"
+                value={this.state.bath}
+                onChange={this.handleBathChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="address">Address:</label>
+              <input
+                type="text"
+                className="postingtext"
+                id="address"
+                value={this.state.address}
+                onChange={this.handleAddressChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.address}</p>
+            </div>
+            <div>
+              <label htmlFor="city">City:</label>
+              <input
+                type="text"
+                className="postingtext"
+                id="city"
+                value={this.state.city}
+                onChange={this.handleCityChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.city}</p>
+            </div>
+            <div>
+              <label htmlFor="price">Price:</label>
+              <input
+                type="number"
+                className="postingnumber"
+                id="price"
+                value={this.state.price}
+                onChange={this.handlePriceChange}
+              />
+              <p className="errormsg">{this.state.errors.price}</p>
+            </div>
+            <div>
+              <label htmlFor="startDate">Start date:</label>
+              <input
+                type="date"
+                className="postingdate"
+                id="startDate"
+                min="2019-12-11"
+                max="2020-12-31"
+                value={this.state.startDate}
+                onChange={this.handleStartChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="endDate">End date:</label>
+              <input
+                type="date"
+                id="endDate"
+                className="postingdate"
+                min="2019-12-12"
+                max="2020-12-31"
+                value={this.state.endDate}
+                onChange={this.handleEndChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="host">Host Name:</label>
+              <input
+                type="text"
+                className="postingtext"
+                id="host"
+                value={this.state.host}
+                onChange={this.handleHostChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.host}</p>
+            </div>
+            <div>
+              <label htmlFor="description">Description:</label>
+              <textarea
+                className="postingtextarea"
+                id="description"
+                value={this.state.description}
+                onChange={this.handleDesChange}
+              ></textarea>
+              <p className="errormsg">{this.state.errors.description}</p>
+            </div>
 
-          <div>
-            <label htmlFor="kitchen">Kitchen:</label>
-            <input
-              type="text"
-              className="postingtext"
-              id="kitchen"
-              value={this.state.kitchen}
-              onChange={this.handleKitchenChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.kitchen}</p>
-          </div>
-          <div>
-            <label htmlFor="gym">Gym:</label>
-            <input
-              type="text"
-              className="postingtext"
-              id="gym"
-              value={this.state.gym}
-              onChange={this.handleGymChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.gym}</p>
-          </div>
-          <div>
-            <label htmlFor="washer">Washer:</label>
-            <input
-              type="text"
-              className="postingtext"
-              id="washer"
-              value={this.state.washer}
-              onChange={this.handleWasherChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.washer}</p>
-          </div>
-          <div>
-            <label htmlFor="dryer">Dryer:</label>
-            <input
-              type="text"
-              className="postingtext"
-              id="dryer"
-              value={this.state.dryer}
-              onChange={this.handleDryerChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.dryer}</p>
-          </div>
-          <div>
-            <label htmlFor="wifi">WiFi:</label>
-            <input
-              type="text"
-              className="postingtext"
-              id="wifi"
-              value={this.state.wifi}
-              onChange={this.handleWifiChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.wifi}</p>
-          </div>
-          <div>
-            <label htmlFor="AC">Air Conditioner:</label>
-            <input
-              type="text"
-              className="postingtext"
-              id="AC"
-              value={this.state.AC}
-              onChange={this.handleACChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.AC}</p>
-          </div>
-          <div>
-            <label htmlFor="parking">Parking:</label>
-            <input
-              type="text"
-              className="postingtext"
-              id="parking"
-              value={this.state.parking}
-              onChange={this.handleParkingChange}
-            ></input>
-            <p className="errormsg">{this.state.errors.parking}</p>
-          </div>
+            <div>
+              <label htmlFor="kitchen">Kitchen:</label>
+              <input
+                type="text"
+                className="postingtext"
+                id="kitchen"
+                value={this.state.kitchen}
+                onChange={this.handleKitchenChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.kitchen}</p>
+            </div>
+            <div>
+              <label htmlFor="gym">Gym:</label>
+              <input
+                type="text"
+                className="postingtext"
+                id="gym"
+                value={this.state.gym}
+                onChange={this.handleGymChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.gym}</p>
+            </div>
+            <div>
+              <label htmlFor="washer">Washer:</label>
+              <input
+                type="text"
+                className="postingtext"
+                id="washer"
+                value={this.state.washer}
+                onChange={this.handleWasherChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.washer}</p>
+            </div>
+            <div>
+              <label htmlFor="dryer">Dryer:</label>
+              <input
+                type="text"
+                className="postingtext"
+                id="dryer"
+                value={this.state.dryer}
+                onChange={this.handleDryerChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.dryer}</p>
+            </div>
+            <div>
+              <label htmlFor="wifi">WiFi:</label>
+              <input
+                type="text"
+                className="postingtext"
+                id="wifi"
+                value={this.state.wifi}
+                onChange={this.handleWifiChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.wifi}</p>
+            </div>
+            <div>
+              <label htmlFor="AC">Air Conditioner:</label>
+              <input
+                type="text"
+                className="postingtext"
+                id="AC"
+                value={this.state.AC}
+                onChange={this.handleACChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.AC}</p>
+            </div>
+            <div>
+              <label htmlFor="parking">Parking:</label>
+              <input
+                type="text"
+                className="postingtext"
+                id="parking"
+                value={this.state.parking}
+                onChange={this.handleParkingChange}
+              ></input>
+              <p className="errormsg">{this.state.errors.parking}</p>
+            </div>
 
-          <button id="publish">Publish</button>
-        </form>
-      </div>
+            <button id="publish">Publish</button>
+          </form>
+        </div>
+      </DocumentTitle>
     );
   }
 }
@@ -1449,72 +1465,74 @@ class Profile extends React.Component {
   };
   render() {
     return (
-      <div id="all-listings">
-        {this.state.loading && <Loading />}
-        <div className="headerblank">
-          <h2>My Listings</h2>
-        </div>
-        {this.state.posts.map(post => {
-          if (post.header.mypost === true) {
-            return (
-              <div className="results" key={post.id}>
-                <NavLink
-                  to={`/my/${post.id}`}
-                  style={{ textDecoration: "none", color: "black" }}
-                >
-                  <div
-                    className="card"
-                    key={post.id}
-                    style={{
-                      backgroundImage: 'url("' + post.header.image + '")',
-                      backgroundSize: "cover"
-                    }}
+      <DocumentTitle title="Profile">
+        <div id="all-listings">
+          {this.state.loading && <Loading />}
+          <div className="headerblank">
+            <h2>My Listings</h2>
+          </div>
+          {this.state.posts.map(post => {
+            if (post.header.mypost === true) {
+              return (
+                <div className="results" key={post.id}>
+                  <NavLink
+                    to={`/my/${post.id}`}
+                    style={{ textDecoration: "none", color: "black" }}
                   >
-                    <button
-                      onClick={this.deleteListing.bind(this, post.id)}
-                      id="delete"
+                    <div
+                      className="card"
+                      key={post.id}
+                      style={{
+                        backgroundImage: 'url("' + post.header.image + '")',
+                        backgroundSize: "cover"
+                      }}
                     >
-                      Delete
-                    </button>
+                      <button
+                        onClick={this.deleteListing.bind(this, post.id)}
+                        id="delete"
+                      >
+                        Delete
+                      </button>
 
-                    <div className="headerbar">
-                      <h3>{post.title}</h3>
-                      <p className="addressline">{post.header.address}</p>
-                      <p className="bedbath">
-                        Bed: {post.header.bed} | Bath: {post.header.bed}
-                      </p>
-                      <p className="hostname">
-                        <span
-                          style={{
-                            fontWeight: "600",
-                            fontSize: "10pt",
-                            lineHeight: "0pt"
-                          }}
-                        >
-                          Host: {post.header.host}
-                        </span>
-                        <span
-                          style={{
-                            color: "orange",
-                            fontWeight: "600",
-                            fontSize: "10pt",
-                            float: "right"
-                          }}
-                        >
-                          {post.header.likes} likes
-                        </span>
-                      </p>
+                      <div className="headerbar">
+                        <h3>{post.title}</h3>
+                        <p className="addressline">{post.header.address}</p>
+                        <p className="bedbath">
+                          Bed: {post.header.bed} | Bath: {post.header.bed}
+                        </p>
+                        <p className="hostname">
+                          <span
+                            style={{
+                              fontWeight: "600",
+                              fontSize: "10pt",
+                              lineHeight: "0pt"
+                            }}
+                          >
+                            Host: {post.header.host}
+                          </span>
+                          <span
+                            style={{
+                              color: "orange",
+                              fontWeight: "600",
+                              fontSize: "10pt",
+                              float: "right"
+                            }}
+                          >
+                            {post.header.likes} likes
+                          </span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </NavLink>
-                <Switch>
-                  <Route path="/my/:id" component={ListingDetails}></Route>
-                </Switch>
-              </div>
-            );
-          }
-        })}
-      </div>
+                  </NavLink>
+                  <Switch>
+                    <Route path="/my/:id" component={ListingDetails}></Route>
+                  </Switch>
+                </div>
+              );
+            }
+          })}
+        </div>
+      </DocumentTitle>
     );
   }
 }
