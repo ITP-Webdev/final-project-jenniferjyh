@@ -5,9 +5,11 @@ import {
   Switch,
   Route,
   NavLink,
-  Redirect
+  Redirect,
 } from "react-router-dom";
+import { Motion, spring } from "react-motion";
 import DocumentTitle from "react-document-title";
+
 const API = "https://unite-api.herokuapp.com/";
 function Loading() {
   return <div className="loader" data-testid="loading"></div>;
@@ -22,12 +24,10 @@ class App extends React.Component {
       <DocumentTitle title="Home Page">
         <div>
           <Router>
-            <nav data-testid="nav-bar">
+            <nav data-testid="nav-bar" id="nav-bar">
               <ul data-testid="ul">
                 <li data-testid="li">
-                  <NavLink to="/" exact={true}>
-                    Home
-                  </NavLink>
+                  <NavLink to="/home">UnitE</NavLink>
                 </li>
                 <li data-testid="li">
                   <NavLink to="/all-listings">Listings</NavLink>
@@ -47,8 +47,9 @@ class App extends React.Component {
 
             <Switch>
               <Route path="/" exact={true} component={HomePage}></Route>
+              <Route path="/home" component={HomePage}></Route>
               <Route path="/all-listings" component={ListingsPage}></Route>
-              <Route path="/listing/:id" component={IndividualListing}></Route>
+              {/* <Route path="/listing/:id" component={IndividualListing}></Route> */}
               <Route path="/listings/new" component={NewListing}></Route>
               <Route path="/listings/edit/:id" component={EditListing}></Route>
               <Route path="/my" component={Profile}></Route>
@@ -69,7 +70,8 @@ class HomePage extends React.Component {
     this.state = {
       listings: [],
       filteredListings: [],
-      loading: false
+      loading: false,
+      hitSearch: false,
     };
   }
   async componentDidMount() {
@@ -77,43 +79,116 @@ class HomePage extends React.Component {
     const json = await response.json();
     this.setState({ listings: json, filteredListings: json });
   }
-  handleSearch = async searchValue => {
-    this.setState({ loading: true });
+  handleSearch = async (searchValue) => {
+    this.setState({ loading: true, hitSearch: true });
+    if (searchValue == null) {
+      this.setState({
+        filteredListings: this.state.listings.filter(() => {
+          return true;
+        }),
+      });
+    } else {
+      this.setState({
+        filteredListings: this.state.listings.filter((post) => {
+          return post.header.city === searchValue;
+        }),
 
-    this.setState({
-      filteredListings: this.state.listings.filter(post => {
-        return post.header.city === searchValue;
-      }),
-
-      loading: false
-    });
+        loading: false,
+      });
+    }
   };
 
   render() {
     return (
       <div id="homepage" data-testid="homepage">
         {this.state.loading && <Loading />}
-        <div id="prompt" data-testid="prompt">
-          <h1>Find The Best Place To Stay </h1>
-          <h4>WORK | INTERNSHIP | SHORT TRIPS</h4>
-          <SearchForm onSearch={this.handleSearch} />
-        </div>
-        <div id="filter" data-testid="filter"></div>
-        <div>
-          {" "}
-          <div className="resultsList" data-testid="results-list">
-            {this.state.filteredListings.map(post => {
+        <Motion
+          defaultStyle={{ y: 0, opacity: 0.8, backgroundColor: "black" }}
+          style={{
+            y: spring(this.state.hitSearch ? -427 : 0),
+            opacity: spring(this.state.hitSearch ? 0 : 0.8),
+            backgroundColor: spring(this.state.hitSearch ? "white" : "white"),
+          }}
+        >
+          {(style) => (
+            <div>
+              <div id="prompt" data-testid="prompt">
+                <h1 style={{ opacity: style.opacity }}>
+                  Find The Best Place To Stay{" "}
+                </h1>
+                <h4 style={{ opacity: style.opacity }}>
+                  WORK | INTERNSHIP | SHORT TRIPS
+                </h4>
+                <div
+                  id="ontop"
+                  style={{ transform: `translateY(${style.y}px)` }}
+                >
+                  <SearchForm onSearch={this.handleSearch} />
+                </div>
+              </div>
+              <div
+                id="filter"
+                data-testid="filter"
+                style={{ opacity: style.opacity }}
+              ></div>
+              <div id="pageimage" style={{ opacity: style.opacity }}></div>
+            </div>
+          )}
+        </Motion>
+
+        <div className="resultsList" data-testid="results-list">
+          {this.state.hitSearch &&
+            this.state.filteredListings.map((post) => {
               return (
-                <ul>
-                  <NavLink to={`/listing/${post.id}`} className="white">
-                    <li key={post.id} className="resultsSearch">
-                      {post.title}
-                    </li>
+                <div className="leftcol">
+                  <NavLink to={`/home/${post.id}`} className="white">
+                    <div
+                      className="card"
+                      key={post.id}
+                      style={{
+                        backgroundImage: 'url("' + post.header.image + '")',
+                        backgroundSize: "cover",
+                      }}
+                    >
+                      <div className="headerbar">
+                        <h3 className="posttitle">{post.title}</h3>
+                        <p className="addressline">{post.header.address}</p>
+                        <p className="bedbath">
+                          Bed: {post.header.bed} | Bath: {post.header.bed}
+                        </p>
+                        <p className="hostname">
+                          <span
+                            style={{
+                              fontWeight: "600",
+                              fontSize: "10pt",
+                              lineHeight: "0pt",
+                            }}
+                          >
+                            Host: {post.header.host}
+                          </span>
+                          <span
+                            style={{
+                              color: "orange",
+                              fontWeight: "600",
+                              fontSize: "10pt",
+                              float: "right",
+                            }}
+                          >
+                            {post.header.likes} likes
+                          </span>
+                        </p>
+                      </div>
+                    </div>
                   </NavLink>
-                </ul>
+                  <Switch>
+                    <Route
+                      path="/home/:id"
+                      component={ListingDetailsHome}
+                    ></Route>
+                  </Switch>
+                </div>
               );
             })}
-          </div>
         </div>
       </div>
     );
@@ -123,15 +198,15 @@ class SearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchValue: ""
+      searchValue: "",
     };
   }
-  handleSearchInputChange = event => {
+  handleSearchInputChange = (event) => {
     this.setState({
-      searchValue: event.target.value
+      searchValue: event.target.value,
     });
   };
-  handleSearch = event => {
+  handleSearch = (event) => {
     event.preventDefault();
     this.props.onSearch(this.state.searchValue);
   };
@@ -163,7 +238,7 @@ class IndividualListing extends React.Component {
     super(props);
     this.state = {
       post: [],
-      loading: true
+      loading: true,
     };
   }
 
@@ -174,7 +249,7 @@ class IndividualListing extends React.Component {
     this.setState({
       //to address undefined page
       post: posts ? posts : [],
-      loading: false
+      loading: false,
     });
   }
 
@@ -196,7 +271,7 @@ class IndividualListing extends React.Component {
               backgroundSize: "cover",
               float: "left",
               borderRadius: "10pt",
-              boxShadow: "2px 2px 10px rgb(175, 175, 175)"
+              boxShadow: "2px 2px 10px rgb(175, 175, 175)",
             }}
           ></div>
           <div className="content">
@@ -283,7 +358,7 @@ class ListingsPage extends React.Component {
     super(props);
     this.state = {
       posts: [],
-      loading: false
+      loading: false,
     };
   }
   async componentDidMount() {
@@ -301,7 +376,7 @@ class ListingsPage extends React.Component {
             <h2>All Listings</h2>
             <div className="filter2"></div>
           </div>
-          {this.state.posts.map(post => {
+          {this.state.posts.map((post) => {
             return (
               <div className="results" key={post.id}>
                 <NavLink
@@ -313,7 +388,7 @@ class ListingsPage extends React.Component {
                     key={post.id}
                     style={{
                       backgroundImage: 'url("' + post.header.image + '")',
-                      backgroundSize: "cover"
+                      backgroundSize: "cover",
                     }}
                   >
                     <div className="headerbar">
@@ -327,7 +402,7 @@ class ListingsPage extends React.Component {
                           style={{
                             fontWeight: "600",
                             fontSize: "10pt",
-                            lineHeight: "0pt"
+                            lineHeight: "0pt",
                           }}
                         >
                           Host: {post.header.host}
@@ -337,7 +412,7 @@ class ListingsPage extends React.Component {
                             color: "orange",
                             fontWeight: "600",
                             fontSize: "10pt",
-                            float: "right"
+                            float: "right",
                           }}
                         >
                           {post.header.likes} likes
@@ -366,7 +441,7 @@ class ListingDetails extends React.Component {
     super(props);
     this.state = {
       post: [],
-      loading: true
+      loading: true,
     };
   }
   async componentDidUpdate(previousProps) {
@@ -376,7 +451,7 @@ class ListingDetails extends React.Component {
       const posts = await fetchListing(listingId);
       this.setState({
         post: posts ? posts : [],
-        loading: false
+        loading: false,
       });
     }
   }
@@ -387,7 +462,7 @@ class ListingDetails extends React.Component {
     this.setState({
       //to address undefined page
       post: posts ? posts : [],
-      loading: false
+      loading: false,
     });
   }
 
@@ -406,7 +481,7 @@ class ListingDetails extends React.Component {
             backgroundSize: "cover",
             float: "left",
             borderRadius: "10pt",
-            boxShadow: "2px 2px 10px rgb(175, 175, 175)"
+            boxShadow: "2px 2px 10px rgb(175, 175, 175)",
           }}
         ></div>
         <div className="content">
@@ -487,6 +562,124 @@ class ListingDetails extends React.Component {
     );
   }
 }
+class ListingDetailsHome extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      post: [],
+      loading: true,
+    };
+  }
+  async componentDidUpdate(previousProps) {
+    if (this.props.match.params.id !== previousProps.match.params.id) {
+      this.setState({ loading: true });
+      const listingId = this.props.match.params.id;
+      const posts = await fetchListing(listingId);
+      this.setState({
+        post: posts ? posts : [],
+        loading: false,
+      });
+    }
+  }
+  async componentDidMount() {
+    const listingId = this.props.match.params.id;
+    const posts = await fetchListing(listingId);
+
+    this.setState({
+      //to address undefined page
+      post: posts ? posts : [],
+      loading: false,
+    });
+  }
+
+  render() {
+    return this.state.loading ? (
+      <Loading />
+    ) : (
+      <div className="details1">
+        <div
+          className="fullimage1"
+          style={{
+            backgroundImage: 'url("' + this.state.post.header.image + '")',
+          }}
+        ></div>
+        <div className="content1">
+          <div className="popup">
+            <h4>${this.state.post.header.price}/month</h4>
+
+            <h5>
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                Available from:{" "}
+              </span>
+              {this.state.post.header.startDate}
+            </h5>
+            <h6>
+              {" "}
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                To:{" "}
+              </span>{" "}
+              {this.state.post.header.endDate}
+            </h6>
+            <button id="contact">CONTACT HOST</button>
+          </div>
+          <h3>{this.state.post.title}</h3>
+          <p className="addressline">{this.state.post.header.address}</p>
+          <p className="bedbath" style={{ marginTop: "20px" }}>
+            <span style={{ fontSize: "12pt", fontWeight: "600" }}>Bed: </span>{" "}
+            {this.state.post.header.bed} |{" "}
+            <span style={{ fontSize: "12pt", fontWeight: "600" }}>Bath: </span>
+            {this.state.post.header.bed}
+          </p>
+          <hr></hr>
+          <p className="des">"{this.state.post.deets.description}"</p>
+          <hr></hr>
+          <ul>
+            <li>
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                Kitchen:{" "}
+              </span>
+              {this.state.post.deets.kitchen}
+            </li>
+            <li>
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>Gym: </span>
+              {this.state.post.deets.gym}
+            </li>
+            <li>
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                Washer:{" "}
+              </span>
+              {this.state.post.deets.washer}
+            </li>
+            <li>
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                Dryer:{" "}
+              </span>
+              {this.state.post.deets.dryer}
+            </li>
+            <li>
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                WiFi:{" "}
+              </span>
+              {this.state.post.deets.wifi}
+            </li>
+            <li>
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                Air Conditioning:{" "}
+              </span>
+              {this.state.post.deets.AC}
+            </li>
+            <li>
+              <span style={{ fontSize: "12pt", fontWeight: "600" }}>
+                Parking:{" "}
+              </span>
+              {this.state.post.deets.parking}
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
+}
 
 class NewListing extends React.Component {
   constructor(props) {
@@ -511,70 +704,70 @@ class NewListing extends React.Component {
       dryer: "",
       wifi: "",
       AC: "",
-      parking: ""
+      parking: "",
     };
   }
 
   handleMypost = () => {
     this.setState({ mypost: true });
   };
-  handleTitleChange = event => {
+  handleTitleChange = (event) => {
     this.setState({ title: event.target.value });
   };
-  handleImageChange = event => {
+  handleImageChange = (event) => {
     this.setState({ image: event.target.value });
   };
-  handleBedChange = event => {
+  handleBedChange = (event) => {
     this.setState({ bed: event.target.value });
   };
-  handleBathChange = event => {
+  handleBathChange = (event) => {
     this.setState({ bath: event.target.value });
   };
-  handleDesChange = event => {
+  handleDesChange = (event) => {
     this.setState({ description: event.target.value });
   };
-  handleCityChange = event => {
+  handleCityChange = (event) => {
     this.setState({ city: event.target.value });
   };
-  handleAddressChange = event => {
+  handleAddressChange = (event) => {
     this.setState({ address: event.target.value });
   };
 
-  handlePriceChange = event => {
+  handlePriceChange = (event) => {
     this.setState({ price: event.target.value });
   };
-  handleStartChange = event => {
+  handleStartChange = (event) => {
     this.setState({ startDate: event.target.value });
   };
-  handleEndChange = event => {
+  handleEndChange = (event) => {
     this.setState({ endDate: event.target.value });
   };
-  handleHostChange = event => {
+  handleHostChange = (event) => {
     this.setState({ host: event.target.value });
   };
-  handleKitchenChange = event => {
+  handleKitchenChange = (event) => {
     this.setState({ kitchen: event.target.value });
   };
-  handleGymChange = event => {
+  handleGymChange = (event) => {
     this.setState({ gym: event.target.value });
   };
-  handleWasherChange = event => {
+  handleWasherChange = (event) => {
     this.setState({ washer: event.target.value });
   };
-  handleDryerChange = event => {
+  handleDryerChange = (event) => {
     this.setState({ dryer: event.target.value });
   };
-  handleWifiChange = event => {
+  handleWifiChange = (event) => {
     this.setState({ wifi: event.target.value });
   };
-  handleACChange = event => {
+  handleACChange = (event) => {
     this.setState({ AC: event.target.value });
   };
-  handleParkingChange = event => {
+  handleParkingChange = (event) => {
     this.setState({ parking: event.target.value });
   };
 
-  handleSubmit = async event => {
+  handleSubmit = async (event) => {
     event.preventDefault();
     const errors = {};
     let hasErrors = false;
@@ -641,7 +834,7 @@ class NewListing extends React.Component {
       await fetch(`${API}api/listings`, {
         method: "POST",
         headers: {
-          "Content-type": "application/json"
+          "Content-type": "application/json",
         },
         body: JSON.stringify({
           title: this.state.title,
@@ -657,7 +850,7 @@ class NewListing extends React.Component {
             startDate: this.state.startDate,
             endDate: this.state.endDate,
             likes: this.state.likes,
-            host: this.state.host
+            host: this.state.host,
           },
           deets: {
             description: this.state.description,
@@ -669,9 +862,9 @@ class NewListing extends React.Component {
             AC: this.state.AC,
             parking: this.state.parking,
             map: this.state.map,
-            rules: this.state.rules
-          }
-        })
+            rules: this.state.rules,
+          },
+        }),
       });
       this.setState({ redirectToMain: true });
       alert("You've successfully created your post");
@@ -1016,7 +1209,7 @@ class EditListing extends React.Component {
       dryer: "",
       wifi: "",
       AC: "",
-      parking: ""
+      parking: "",
     };
   }
   async componentDidMount() {
@@ -1042,68 +1235,68 @@ class EditListing extends React.Component {
       dryer: json.deets.dryer,
       wifi: json.deets.wifi,
       AC: json.deets.AC,
-      parking: json.deets.parking
+      parking: json.deets.parking,
     });
   }
   handleMypost = () => {
     this.setState({ mypost: true });
   };
-  handleTitleChange = event => {
+  handleTitleChange = (event) => {
     this.setState({ title: event.target.value });
   };
-  handleImageChange = event => {
+  handleImageChange = (event) => {
     this.setState({ image: event.target.value });
   };
-  handleBedChange = event => {
+  handleBedChange = (event) => {
     this.setState({ bed: event.target.value });
   };
-  handleBathChange = event => {
+  handleBathChange = (event) => {
     this.setState({ bath: event.target.value });
   };
-  handleDesChange = event => {
+  handleDesChange = (event) => {
     this.setState({ description: event.target.value });
   };
-  handleAddressChange = event => {
+  handleAddressChange = (event) => {
     this.setState({ address: event.target.value });
   };
-  handleCityChange = event => {
+  handleCityChange = (event) => {
     this.setState({ city: event.target.value });
   };
-  handlePriceChange = event => {
+  handlePriceChange = (event) => {
     this.setState({ price: event.target.value });
   };
-  handleStartChange = event => {
+  handleStartChange = (event) => {
     this.setState({ startDate: event.target.value });
   };
-  handleEndChange = event => {
+  handleEndChange = (event) => {
     this.setState({ endDate: event.target.value });
   };
-  handleHostChange = event => {
+  handleHostChange = (event) => {
     this.setState({ host: event.target.value });
   };
-  handleKitchenChange = event => {
+  handleKitchenChange = (event) => {
     this.setState({ kitchen: event.target.value });
   };
-  handleGymChange = event => {
+  handleGymChange = (event) => {
     this.setState({ gym: event.target.value });
   };
-  handleWasherChange = event => {
+  handleWasherChange = (event) => {
     this.setState({ washer: event.target.value });
   };
-  handleDryerChange = event => {
+  handleDryerChange = (event) => {
     this.setState({ dryer: event.target.value });
   };
-  handleWifiChange = event => {
+  handleWifiChange = (event) => {
     this.setState({ wifi: event.target.value });
   };
-  handleACChange = event => {
+  handleACChange = (event) => {
     this.setState({ AC: event.target.value });
   };
-  handleParkingChange = event => {
+  handleParkingChange = (event) => {
     this.setState({ parking: event.target.value });
   };
 
-  handleSubmit = async event => {
+  handleSubmit = async (event) => {
     event.preventDefault();
     const errors = {};
     let hasErrors = false;
@@ -1171,7 +1364,7 @@ class EditListing extends React.Component {
       await fetch(`${API}api/listings/${id}`, {
         method: "PUT",
         headers: {
-          "Content-type": "application/json"
+          "Content-type": "application/json",
         },
         body: JSON.stringify({
           title: this.state.title,
@@ -1187,7 +1380,7 @@ class EditListing extends React.Component {
             startDate: this.state.startDate,
             endDate: this.state.endDate,
             likes: this.state.likes,
-            host: this.state.host
+            host: this.state.host,
           },
           deets: {
             description: this.state.description,
@@ -1199,9 +1392,9 @@ class EditListing extends React.Component {
             AC: this.state.AC,
             parking: this.state.parking,
             map: this.state.map,
-            rules: this.state.rules
-          }
-        })
+            rules: this.state.rules,
+          },
+        }),
       });
       this.setState({ redirectToMain: true });
       alert("You've successfully edited your post");
@@ -1444,7 +1637,7 @@ class Profile extends React.Component {
     super(props);
     this.state = {
       posts: [],
-      loading: false
+      loading: false,
     };
   }
   async componentDidMount() {
@@ -1452,15 +1645,15 @@ class Profile extends React.Component {
     const posts = await response.json();
     this.setState({ posts });
   }
-  deleteListing = async id => {
+  deleteListing = async (id) => {
     await fetch(`${API}api/listings/${id}`, {
-      method: "DELETE"
+      method: "DELETE",
     });
     alert("You've successfully deleted your post");
     this.setState({
-      posts: this.state.posts.filter(post => {
+      posts: this.state.posts.filter((post) => {
         return post.id !== id;
-      })
+      }),
     });
   };
   render() {
@@ -1471,7 +1664,7 @@ class Profile extends React.Component {
           <div className="headerblank">
             <h2>My Listings</h2>
           </div>
-          {this.state.posts.map(post => {
+          {this.state.posts.map((post) => {
             if (post.header.mypost === true) {
               return (
                 <div className="results" key={post.id}>
@@ -1484,7 +1677,7 @@ class Profile extends React.Component {
                       key={post.id}
                       style={{
                         backgroundImage: 'url("' + post.header.image + '")',
-                        backgroundSize: "cover"
+                        backgroundSize: "cover",
                       }}
                     >
                       <button
@@ -1505,7 +1698,7 @@ class Profile extends React.Component {
                             style={{
                               fontWeight: "600",
                               fontSize: "10pt",
-                              lineHeight: "0pt"
+                              lineHeight: "0pt",
                             }}
                           >
                             Host: {post.header.host}
@@ -1515,7 +1708,7 @@ class Profile extends React.Component {
                               color: "orange",
                               fontWeight: "600",
                               fontSize: "10pt",
-                              float: "right"
+                              float: "right",
                             }}
                           >
                             {post.header.likes} likes
@@ -1547,5 +1740,5 @@ export {
   ListingDetails,
   NewListing,
   EditListing,
-  Profile
+  Profile,
 };
